@@ -5,5 +5,7 @@ exports.getArticleById = (request, response, next) => {
     return fetchArticleById(article_id)
     .then((article) => {
         response.status(200).send({article})
+    }).catch((err) => {
+        next(err)
     })
 }

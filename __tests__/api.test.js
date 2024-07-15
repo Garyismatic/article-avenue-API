@@ -56,7 +56,14 @@ describe('/api/articles/:article_id', () => {
             })
         })
         describe('error handling for get /api/articles/article_id', () => {
-            
+            it('responds with 404 status if article id does not exist', () => {
+                return request(app)
+                .get('/api/articles/9001')
+                .expect(404)
+                .then(({body: { message }}) => {
+                    expect(message).toBe('not found')
+                })
+            })
         })
     })
 })
