@@ -64,6 +64,14 @@ describe('/api/articles/:article_id', () => {
                     expect(message).toBe('not found')
                 })
             })
+            it('responds with 400 status and "bad request" if id is not the expected data type', () => {
+                return request(app)
+                .get('/api/articles/not-a-number')
+                .expect(400)
+                .then(({body: {message}}) => {
+                    expect(message).toBe('Invalid datatype')
+                })
+            })
         })
     })
 })
