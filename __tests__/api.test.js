@@ -19,6 +19,16 @@ describe('/api', () => {
                 expect(body).toEqual({endpoints})
             })
         })
+        it('includes all the correct keys from the JSON file', () => {
+            const endpointKeys = Object.keys(endpoints)
+            return request(app)
+            .get('/api')
+            .expect(200)
+            .then(({body}) => {
+                const responseKeys = Object.keys(body.endpoints)
+                expect(responseKeys).toEqual(endpointKeys)
+            })
+        })
     })
 })
 describe('/api/topics', () => {
