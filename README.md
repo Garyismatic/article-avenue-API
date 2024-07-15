@@ -6,11 +6,11 @@ The .env files have been ommited from the git repository through the use of .git
 
 To create the files the user will need to download the npm dotenv package and create two files in the root directory .env.test and .env.development, inside each of the files should be the reference to the database 
 
-'PGDATABASE=nc_news_test' inside .env.test 
+`PGDATABASE=nc_news_test` inside .env.test 
 
 and 
 
-'PGDATABASE=nc_news' inside .env.development.
+`PGDATABASE=nc_news` inside .env.development.
 
 the project will now be able to access either database.
 
