@@ -38,7 +38,8 @@ exports.addCommentToArticle = (articleId, author, comment) => {
     return checkUserExists(author).then((result) => {
         if(!result){
             return Promise.reject({status: 401, message: 'unknown username'})
-        }else{
+        }
+        else{
             return checkArticleIdExists(articleId)
     .then((result) => {
         if(!result){
@@ -53,6 +54,22 @@ exports.addCommentToArticle = (articleId, author, comment) => {
             } )
         }   
     }) 
+        }
+    })
+    
+}
+
+exports.updateVotesOnArticle = (voteCount, articleId) => {
+    return checkArticleIdExists(articleId)
+    .then((result) => {
+        if(!result){
+            return Promise.reject({status: 404, message: 'not found'})
+        }
+        else{
+            return db.query('UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *', [voteCount,articleId])
+    .then(({rows}) => {
+        return rows[0]
+    })
         }
     })
     
