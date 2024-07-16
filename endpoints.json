@@ -29,7 +29,7 @@
   "GET /api/articles/:article_id": {
     "description": "serves an article relevant to provided article id",
     "exampleResponse": {
-      "article": [
+      "article": 
         {
           "article_id": 1,
           "title": "Eight pug gifs that remind me of mitch",
@@ -40,7 +40,6 @@
           "votes": 1,
           "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         }
-      ]
     }
   },
   "GET /api/articles/:article_id/comments": {
@@ -68,8 +67,30 @@
   },
   "POST /api/articles/:article_id/comments": {
     "description": "Inserts a comment into the comment database linked to an article by the id number",
+    "request Body Format Example": {
+      "username": "insert your username",
+      "body": "This is the comment that will be posted"
+  },
     "exampleResponse": {
       "commentPosted": "My comment posted on an article"
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "Increases or decreases an articles vote count selected by its id",
+    "request Body Format Example": { "inc_votes": 1 },
+    "exampleResponse": {
+      "articleUpdated" :
+        {
+          "article_id": 1,
+          "title": "Eight pug gifs that remind me of mitch",
+          "topic": "mitch",
+          "author": "TheMitchFan",
+          "body": "Text from the article..",
+          "created_at": "2020-11-03T09:12:00.000Z",
+          "votes": 1,
+          "article_img_url":"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      
     }
   }
 }

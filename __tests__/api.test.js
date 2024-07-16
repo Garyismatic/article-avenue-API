@@ -114,6 +114,92 @@ describe('/api/articles/:article_id', () => {
             })
         })  
     })
+    describe('PATCH', () => {
+        it('updates the votes count on an article selected by its corresponding article_id', () => {
+            return request(app)
+            .patch('/api/articles/3')
+            .send({ inc_votes: 5})
+            .expect(200)
+            .then(({body: {updatedArticle}}) => {
+                expect(updatedArticle).toEqual( {
+                    article_id: 3,
+                    title: "Eight pug gifs that remind me of mitch",
+                    topic: "mitch",
+                    author: "icellusedkars",
+                    body: "some gifs",
+                    created_at: expect.any(String),
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                      votes: 5
+                  })
+            })
+        })
+        it('increments the votes count on an article selected by its corresponding article_id and doesnt just replace the value', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 5})
+            .expect(200)
+            .then(({body: {updatedArticle}}) => {
+                expect(updatedArticle).toEqual( {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: expect.any(String),
+                    votes: 105,
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                  })
+            })
+        })
+        it('decreases the vote count when given a negative number', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: -10})
+            .expect(200)
+            .then(({body: {updatedArticle}}) => {
+                expect(updatedArticle).toEqual( {
+                    article_id: 1,
+                    title: "Living in the shadow of a great man",
+                    topic: "mitch",
+                    author: "butter_bridge",
+                    body: "I find this existence challenging",
+                    created_at: expect.any(String),
+                    votes: 90,
+                    article_img_url:
+                      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+                  })
+            })
+        })
+        it('responds back with 400 error if votes is not a number', () => {
+            return request(app)
+            .patch('/api/articles/3')
+            .send({ inc_votes: 'not-a-number'})
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('responds with 400 invalid request if article id is not a number', () => {
+            return request(app)
+            .patch('/api/articles/not-a-number-now')
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('responds with 404 not found if article id does not exist', () => {
+            return request(app)
+            .patch('/api/articles/3421')
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+    })
 })
 describe('/api/articles/:article_id/comments', () => {
     describe('GET', () => {
