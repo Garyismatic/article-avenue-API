@@ -43,6 +43,45 @@ describe('/api/topics', () => {
         })
     })
 })
+describe('/api/articles', () => {
+    describe('GET', () => {
+        it('returns an array of articles from the db', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                articles.forEach((article) => {
+                    expect(article).toEqual({
+                        author: expect.any(String),
+                        title: expect.any(String),
+                        article_id: expect.any(Number),
+                        topic: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number),
+                        article_img_url: expect.any(String),
+                        comment_count: expect.any(Number)
+                    })
+                })
+            })
+        })
+        it('returns all of the articles from the db', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
+            })
+        })
+        it('returns the articles sorted by date newly created first', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles).toBeSortedBy('created_at', {descending: true})
+            })
+        })
+    })
+})
 describe('/api/articles/:article_id', () => {
     describe('GET', () => {
         it('returns an article corresponding to the article id given', () => {
@@ -65,23 +104,21 @@ describe('/api/articles/:article_id', () => {
                 })
             })
         })
-        describe('error handling for get /api/articles/article_id', () => {
-            it('responds with 404 status if article id does not exist', () => {
-                return request(app)
-                .get('/api/articles/9001')
-                .expect(404)
-                .then(({body: { message }}) => {
-                    expect(message).toBe('not found')
-                })
-            })
-            it('responds with 400 status and "bad request" if id is not the expected data type', () => {
-                return request(app)
-                .get('/api/articles/not-a-number')
-                .expect(400)
-                .then(({body: {message}}) => {
-                    expect(message).toBe('Invalid datatype')
-                })
+        it('responds with 404 status if article id does not exist', () => {
+            return request(app)
+            .get('/api/articles/9001')
+            .expect(404)
+            .then(({body: { message }}) => {
+                expect(message).toBe('not found')
             })
         })
+        it('responds with 400 status and "bad request" if id is not the expected data type', () => {
+            return request(app)
+            .get('/api/articles/not-a-number')
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Invalid datatype')
+            })
+        })  
     })
 })
