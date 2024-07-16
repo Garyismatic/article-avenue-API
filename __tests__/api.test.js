@@ -64,6 +64,22 @@ describe('/api/articles', () => {
                 })
             })
         })
+        it('returns all of the articles from the db', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
+            })
+        })
+        it('returns the articles sorted by date newly created first', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles).toBeSortedBy('created_at', {descending: true})
+            })
+        })
     })
 })
 describe('/api/articles/:article_id', () => {
