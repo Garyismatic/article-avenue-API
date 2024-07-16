@@ -9,7 +9,7 @@ exports.customErrors = (err, request, response, next) => {
 
 exports.psqlCodeErrors = (err, request, response, next) => {
     if(err.code === '22P02'){
-        response.status(400).send({message: 'Invalid datatype'})
+        response.status(400).send({message: 'invalid request'})
     }
     next(err)
 }

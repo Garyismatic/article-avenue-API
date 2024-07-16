@@ -110,7 +110,7 @@ describe('/api/articles/:article_id', () => {
             .get('/api/articles/not-a-number')
             .expect(400)
             .then(({body: {message}}) => {
-                expect(message).toBe('Invalid datatype')
+                expect(message).toBe('invalid request')
             })
         })  
     })
@@ -158,7 +158,7 @@ describe('/api/articles/:article_id/comments', () => {
             .get('/api/articles/not-a-number/comments')
             .expect(400)
             .then(({body: {message}}) => {
-                expect(message).toBe('Invalid datatype')
+                expect(message).toBe('invalid request')
             })
         })
         it('returns an empty array if the article id exists but there are no comments', () => {
@@ -167,6 +167,73 @@ describe('/api/articles/:article_id/comments', () => {
             .expect(200)
             .then(({body: {comments}}) => {
                 expect(comments).toEqual([])
+            })
+        })
+    })
+    describe('POST', () => {
+        it('targets an article by its id and adds a comment to it', () => {
+            const comment = {
+                username: 'butter_bridge',
+                body: 'This is my random comment'
+            }
+            return request(app)
+            .post('/api/articles/7/comments')
+            .send(comment)
+            .expect(201)
+            .then(({body: {commentPosted}}) => {
+                expect(commentPosted).toBe('This is my random comment')
+            })
+        })
+        it('returns an error if passed an empty comment', () => {
+            const comment = {
+                username: 'butter_bridge',
+                body: ''
+            }
+            return request(app)
+            .post('/api/articles/7/comments')
+            .send(comment)
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Comment body can not be empty')
+            })
+        })
+        it('returns 404 not found if the article id does not exist', () => {
+            const comment = {
+                username: 'butter_bridge',
+                body: 'OVER 9000 ARTICLES!!!!!!!!!'
+            }
+            return request(app)
+            .post('/api/articles/9001/comments')
+            .send(comment)
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+        it('returns 401 error unauthorised if username does not exist', () => {
+            const comment = {
+                username: 'not-a-user',
+                body: 'How do I sign up?'
+            }
+            return request(app)
+            .post('/api/articles/7/comments')
+            .send(comment)
+            .expect(401)
+            .then(({body: {message}}) => {
+                expect(message).toBe('unknown username')
+            })
+        })
+        it('returns 400 invalid articleId if article id is not a number', () => {
+            const comment = {
+                username: 'rogersop',
+                body: 'I love to comment on random things'
+            }
+            return request(app)
+            .post('/api/articles/not-a-number/comments')
+            .send(comment)
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
             })
         })
     })
