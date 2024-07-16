@@ -45,11 +45,12 @@ describe('/api/topics', () => {
 })
 describe('/api/articles', () => {
     describe('GET', () => {
-        it('returns an array of articles from the db', () => {
+        it('returns an array of all articles from the db', () => {
             return request(app)
             .get('/api/articles')
             .expect(200)
             .then(({body: {articles}}) => {
+                expect(articles.length).toBe(13)
                 articles.forEach((article) => {
                     expect(article).toEqual({
                         author: expect.any(String),
@@ -62,14 +63,6 @@ describe('/api/articles', () => {
                         comment_count: expect.any(Number)
                     })
                 })
-            })
-        })
-        it('returns all of the articles from the db', () => {
-            return request(app)
-            .get('/api/articles')
-            .expect(200)
-            .then(({body: {articles}}) => {
-                expect(articles.length).toBe(13)
             })
         })
         it('returns the articles sorted by date newly created first', () => {
