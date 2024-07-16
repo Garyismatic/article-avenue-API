@@ -3,9 +3,8 @@ const {
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
+
 const { checkArticleIdExists, checkUserExists } = require("../utils/utils");
-
-
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
