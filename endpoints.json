@@ -65,5 +65,11 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Inserts a comment into the comment database linked to an article by the id number",
+    "exampleResponse": {
+      "commentPosted": "My comment posted on an article"
+    }
   }
 }

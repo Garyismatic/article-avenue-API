@@ -3,7 +3,7 @@ const {
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
-const { checkArticleIdExists } = require("../utils/utils");
+const { checkArticleIdExists, checkUserExists } = require("../utils/utils");
 
 
 
@@ -114,6 +114,19 @@ describe('checkarticleIdExists', () => {
   })
   it('returns a value of false if article id is not assigned to an article', () => {
     return checkArticleIdExists(99).then((result) => {
+      expect(result).toBe(false)
+    })
+  })
+})
+
+describe('checkUserExists', () => {
+  it('returns true if username is found in database', () => {
+    return checkUserExists("icellusedkars").then((result) => {
+      expect(result).toBe(true)
+    })
+  })
+  it('returns false if username is not found in database', () => {
+    return checkUserExists("not-a-user").then((result) => {
       expect(result).toBe(false)
     })
   })

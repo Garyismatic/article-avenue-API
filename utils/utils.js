@@ -10,3 +10,10 @@ exports.checkArticleIdExists = (article_id) => {
         }
     })
 }
+
+exports.checkUserExists = (username) => {
+    return db.query('SELECT * FROM users WHERE username = $1',[username])
+    .then(({rows}) => {
+        return rows.length === 1
+    })
+}

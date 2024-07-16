@@ -1,5 +1,6 @@
 const db = require('../db/connection')
-const { checkArticleIdExists } = require('../utils/utils')
+const { checkArticleIdExists, checkUserExists } = require('../utils/utils')
+const format = require('pg-format')
 
 exports.fetchArticles = () => {
 
@@ -31,4 +32,28 @@ exports.fetchCommentsOnArticle = (articleId) => {
             })
         }   
     })  
+}
+
+exports.addCommentToArticle = (articleId, author, comment) => {
+    return checkUserExists(author).then((result) => {
+        if(!result){
+            return Promise.reject({status: 401, message: 'unknown username'})
+        }else{
+            return checkArticleIdExists(articleId)
+    .then((result) => {
+        if(!result){
+            return Promise.reject({ status: 404, message: 'not found'})
+        }if(comment.length === 0){
+            return Promise.reject({status: 400, message: 'Comment body can not be empty'})
+        }
+        else{
+            return db.query('INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *', [articleId, author, comment])
+            .then(({rows}) => {
+                return rows[0]
+            } )
+        }   
+    }) 
+        }
+    })
+    
 }
