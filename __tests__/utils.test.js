@@ -3,6 +3,9 @@ const {
   createRef,
   formatComments,
 } = require("../db/seeds/utils");
+const { checkArticleIdExists } = require("../utils/utils");
+
+
 
 describe("convertTimestampToDate", () => {
   test("returns a new object", () => {
@@ -102,3 +105,16 @@ describe("formatComments", () => {
     expect(formattedComments[0].created_at).toEqual(new Date(timestamp));
   });
 });
+
+describe('checkarticleIdExists', () => {
+  it('returns a value of true if article id is assigned to an article', () => {
+    return checkArticleIdExists(1).then((result) => {
+      expect(result).toBe(true)
+    })
+  })
+  it('returns a value of false if article id is not assigned to an article', () => {
+    return checkArticleIdExists(99).then((result) => {
+      expect(result).toBe(false)
+    })
+  })
+})

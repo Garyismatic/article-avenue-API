@@ -115,3 +115,59 @@ describe('/api/articles/:article_id', () => {
         })  
     })
 })
+describe('/api/articles/:article_id/comments', () => {
+    describe('GET', () => {
+        it('returns an array of all comments linked to a specific article id', () => {
+            return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments.length).toBe(11)
+                comments.forEach((comment) => {
+                    expect(comment).toEqual({
+                        comment_id: expect.any(Number),
+                        votes: expect.any(Number),
+                        created_at: expect.any(String),
+                        author: expect.any(String),
+                        body: expect.any(String),
+                        article_id: expect.any(Number)
+                    })
+                })
+            })
+        })
+        it('returns comments ordered by date with newly created first', () => {
+            return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments).toBeSortedBy('created_at', {
+                    descending: true
+                })
+            })
+        })
+        it('returns an error 404 status when passed an article id that does not exist', () => {
+            return request(app)
+            .get('/api/articles/9001/comments')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+        it('returns the 400 status when passed an id that is an invalid data type', () => {
+            return request(app)
+            .get('/api/articles/not-a-number/comments')
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Invalid datatype')
+            })
+        })
+        it('returns an empty array if the article id exists but there are no comments', () => {
+            return request(app)
+            .get('/api/articles/7/comments')
+            .expect(200)
+            .then(({body: {comments}}) => {
+                expect(comments).toEqual([])
+            })
+        })
+    })
+})
