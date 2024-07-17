@@ -2,12 +2,17 @@ const { fetchArticleById, fetchArticles, fetchCommentsOnArticle, addCommentToArt
 
 exports.getArticles = (request, response, next) => {
     const {sort_by} = request.query
-    return fetchArticles(sort_by)
+    const {order} = request.query
+    return fetchArticles(sort_by, order)
     .then((articles) => {
         articles.forEach((article) => {
             article.comment_count = parseInt(article.comment_count) //<< change comment_count to number from string
         })
         response.status(200).send({articles})
+    })
+    .catch((err) => {
+        console.log(err)
+        next(err)
     })
 }
 
@@ -23,7 +28,8 @@ exports.getArticleById = (request, response, next) => {
 
 exports.getCommentsFromArticleId = (request, response, next) => {
     const { article_id } = request.params
-    return fetchCommentsOnArticle(article_id).then((comments) => {
+    return fetchCommentsOnArticle(article_id)
+    .then((comments) => {
         response.status(200).send({comments})
     }).catch((err) => {
         next(err)

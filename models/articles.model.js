@@ -2,10 +2,19 @@ const db = require('../db/connection')
 const { checkUserExists } = require('../utils/utils')
 const format = require('pg-format')
 
-exports.fetchArticles = (sort_by = 'created_at') => {
+exports.fetchArticles = (sort_by = 'created_at', order = 'DESC') => {
 
-    return db.query('SELECT COUNT (comments.body) AS comment_count, articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id  GROUP BY articles.article_id ORDER BY created_at DESC')
+    const orderGreenList = ['asc', 'ASC', 'desc', 'DESC' ]
 
+    if(!orderGreenList.includes(order)){
+        return Promise.reject({status: 400, message: 'invalid request'})
+    }
+
+    let sqlString = format('SELECT COUNT (comments.body) AS comment_count, articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id  GROUP BY articles.article_id ORDER BY %I', sort_by)
+
+    sqlString += ` ${order}`
+
+    return db.query(sqlString)
     .then(({rows}) => {
         return rows
     })
@@ -25,10 +34,10 @@ exports.fetchCommentsOnArticle = (articleId) => {
     return this.fetchArticleById(articleId)
     .then((result) => {
         return db.query('SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC', [articleId])
-        })
-        .then(({rows}) => {
-            return rows
-        }) 
+    })
+    .then(({rows}) => {
+        return rows
+    }) 
 }
 
 exports.addCommentToArticle = (articleId, author, comment) => {
