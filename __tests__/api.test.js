@@ -382,7 +382,33 @@ describe('GET /api/articles (sorting queries)', () => {
             .get('/api/articles?sort_by=article_id')
             .expect(200)
             .then(({body: {articles}}) => {
-                expect(articles).toBeSortedBy('article_id')
+                expect(articles).toBeSortedBy('article_id', {
+                    descending: true
+                })
+            })
+        })
+        it('serves an array ordered in ascending order if queried', () => {
+            return request(app)
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles).toBeSortedBy('created_at')
+            })
+        })
+        it('serves an error 400 invalid request if order is not a valid argument', () => {
+            return request(app)
+            .get('/api/articles?order=mylunch')
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('serves an error 404 not found if sort_by is not a valid column', () => {
+            return request(app)
+            .get('/api/articles?sort_by=height')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('column does not exist')
             })
         })
     })
