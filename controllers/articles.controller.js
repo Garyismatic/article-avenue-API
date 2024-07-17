@@ -1,7 +1,8 @@
 const { fetchArticleById, fetchArticles, fetchCommentsOnArticle, addCommentToArticle, updateVotesOnArticle } = require("../models/articles.model")
 
 exports.getArticles = (request, response, next) => {
-    return fetchArticles()
+    const {sort_by} = request.query
+    return fetchArticles(sort_by)
     .then((articles) => {
         articles.forEach((article) => {
             article.comment_count = parseInt(article.comment_count) //<< change comment_count to number from string

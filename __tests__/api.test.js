@@ -375,3 +375,15 @@ describe('/api/users', () => {
         })
     })
 })
+describe('GET /api/articles (sorting queries)', () => {
+    describe('sort_by', () => {
+        it('serves an array of articles sorted by their ID number', () => {
+            return request(app)
+            .get('/api/articles?sort_by=article_id')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles).toBeSortedBy('article_id')
+            })
+        })
+    })
+})

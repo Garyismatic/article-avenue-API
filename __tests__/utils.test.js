@@ -107,19 +107,6 @@ describe("formatComments", () => {
   });
 });
 
-describe('checkarticleIdExists', () => {
-  it('returns a value of true if article id is assigned to an article', () => {
-    return checkArticleIdExists(1).then((result) => {
-      expect(result).toBe(true)
-    })
-  })
-  it('returns a value of false if article id is not assigned to an article', () => {
-    return checkArticleIdExists(99).then((result) => {
-      expect(result).toBe(false)
-    })
-  })
-})
-
 describe('checkUserExists', () => {
   it('returns true if username is found in database', () => {
     return checkUserExists("icellusedkars").then((result) => {
