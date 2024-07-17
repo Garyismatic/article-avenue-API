@@ -65,9 +65,19 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "exampleResponse": [
+      {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    ]
+  },
   "POST /api/articles/:article_id/comments": {
     "description": "Inserts a comment into the comment database linked to an article by the id number",
-    "request Body Format Example": {
+    "requestFormatExample": {
       "username": "insert your username",
       "body": "This is the comment that will be posted"
   },
@@ -77,7 +87,7 @@
   },
   "PATCH /api/articles/:article_id": {
     "description": "Increases or decreases an articles vote count selected by its id",
-    "request Body Format Example": { "inc_votes": 1 },
+    "requestFormatExample": { "inc_votes": 1 },
     "exampleResponse": {
       "articleUpdated" :
         {
@@ -96,4 +106,5 @@
   "DELETE, /api/comments/:comment_id": {
     "description": "deletes a comment from the database selected by its comment ID"
   }
+
 }
