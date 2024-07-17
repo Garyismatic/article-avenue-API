@@ -5,7 +5,7 @@ const {
 } = require("../db/seeds/utils");
 
 
-const { checkArticleIdExists, checkUserExists } = require("../utils/utils");
+const { checkArticleIdExists, checkUserExists, checkCommentExists } = require("../utils/utils");
 
 
 describe("convertTimestampToDate", () => {
@@ -128,6 +128,19 @@ describe('checkUserExists', () => {
   })
   it('returns false if username is not found in database', () => {
     return checkUserExists("not-a-user").then((result) => {
+      expect(result).toBe(false)
+    })
+  })
+})
+
+describe('checkCommentExists', () => {
+  it('returns true if comment is found in database', () => {
+    return checkCommentExists(7).then((result) => {
+      expect(result).toBe(true)
+    })
+  })
+  it('returns false if comment is not found in database', () => {
+    return checkCommentExists(300).then((result) => {
       expect(result).toBe(false)
     })
   })
