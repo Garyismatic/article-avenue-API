@@ -5,6 +5,7 @@ const data = require('../db/data/test-data/index')
 const seed = require('../db/seeds/seed')
 const topics = require('../db/data/test-data/topics')
 const endpoints = require('../endpoints.json')
+const { checkCommentExists } = require('../utils/utils')
 
 beforeEach(() => seed(data))
 afterAll(() => db.end())
@@ -317,6 +318,37 @@ describe('/api/articles/:article_id/comments', () => {
             return request(app)
             .post('/api/articles/not-a-number/comments')
             .send(comment)
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+    })
+})
+describe('/api/comments/:comment_id', () => {
+    describe('DELETE', () => {
+        it('returns a 204 status removing the comment selected by id from the database table', () => {
+            return request(app)
+            .delete('/api/comments/7')
+            .expect(204)
+            .then(() => {
+                return checkCommentExists(7)
+                .then((result) => {
+                    expect(result).toBe(false)
+                })
+            })
+        })
+        it('returns a 404 not found if comment_id does not exist', () => {
+            return request(app)
+            .delete('/api/comments/999')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+        it('returns a 400 bad request if comment id is not a number', () => {
+            return request(app)
+            .delete('/api/comments/not-a-number')
             .expect(400)
             .then(({body: {message}}) => {
                 expect(message).toBe('invalid request')
