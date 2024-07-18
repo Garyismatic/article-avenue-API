@@ -43,7 +43,7 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
 }
 
 exports.fetchArticleById = (articleId) => {
-    return db.query('SELECT * FROM articles WHERE article_id = $1', [articleId])
+    return db.query('SELECT COUNT (comments.article_id) AS comment_count, articles.body, articles.article_id, articles.author, articles.votes, articles.created_at, title, topic, article_img_url FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id', [articleId])
     .then(({rows}) => {
         if(rows.length === 0){
             return Promise.reject({ status: 404, message: 'not found' })
