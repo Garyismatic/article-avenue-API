@@ -1,5 +1,5 @@
-const { fetchUsername } = require("../models/comments.model")
-const { fetchUsers } = require("../models/users.model")
+
+const { fetchUsers, fetchUsername } = require("../models/users.model")
 
 exports.getUsers = (request, response, next) => {
     return fetchUsers()
