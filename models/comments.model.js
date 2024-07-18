@@ -12,8 +12,8 @@ exports.removeComment = (commentId) => {
     })   
 }
 
-exports.fetchUsername = (username) => {
-    return db.query('SELECT * FROM users WHERE username = $1', [username])
+exports.updateCommentsVotes = (commentId, votes) => {
+    return db.query('UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *', [votes, commentId])
     .then(({rows}) => {
         if(rows.length === 0){
             return Promise.reject({status: 404, message: 'not found'})

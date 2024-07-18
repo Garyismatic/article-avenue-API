@@ -147,6 +147,22 @@
       
     }
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Increases or decreases a comments vote count selected by its id",
+    "requestFormatExample": { "inc_votes": 1 },
+    "exampleResponse": {
+      "comment" :
+      {
+        "comment_id": 1,
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "article_id": 9,
+        "author": "butter_bridge",
+        "votes": 11,
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+      
+    }
+  },
   "DELETE, /api/comments/:comment_id": {
     "description": "deletes a comment from the database selected by its comment ID"
   }

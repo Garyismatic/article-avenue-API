@@ -356,6 +356,67 @@ describe('/api/comments/:comment_id', () => {
             })
         })
     })
+    describe('PATCH', () => {
+        it('increases the the vote count on a comment selected by its id', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({ inc_votes: 5})
+            .expect(200)
+            .then(({body: {comment}}) => {
+                expect(comment).toMatchObject( {
+                        comment_id: 1,
+                        votes: 21,
+                        created_at: expect.any(String),
+                        author: "butter_bridge",
+                        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                        article_id: 9
+                })
+            })
+        })
+        it('decreases the the vote count on a comment selected by its id', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({ inc_votes: -5})
+            .expect(200)
+            .then(({body: {comment}}) => {
+                expect(comment).toMatchObject( {
+                        comment_id: 1,
+                        votes: 11,
+                        created_at: expect.any(String),
+                        author: "butter_bridge",
+                        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+                        article_id: 9
+                })
+            })
+        })
+        it('responds back with 400 error if votes is not a number', () => {
+            return request(app)
+            .patch('/api/comments/1')
+            .send({ inc_votes: 'not-a-number'})
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('responds with 400 invalid request if comments id is not a number', () => {
+            return request(app)
+            .patch('/api/comments/not-a-number-now')
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('responds with 404 not found if comment id does not exist', () => {
+            return request(app)
+            .patch('/api/comments/3421')
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+    })
 })
 describe('/api/users', () => {
     describe('GET', () => {
