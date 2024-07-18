@@ -447,3 +447,27 @@ describe('GET /api/articles (queries)', () => {
         })
     })   
 })
+describe('/api/users/:username', () => {
+    describe('GET', () => {
+        it('should return a user selected by the user id', () => {
+            return request(app)
+            .get('/api/users/icellusedkars')
+            .expect(200)
+            .then(({body: {user}}) => {
+                expect(user).toMatchObject({
+                    username: 'icellusedkars',
+                    name: 'sam',
+                    avatar_url: 'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4'
+                  })
+            })
+        })
+        it('returns 404 if user not found', () => {
+            return request(app)
+            .get('/api/users/not-a-user')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+    })
+})
