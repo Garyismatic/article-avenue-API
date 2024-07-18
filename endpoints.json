@@ -110,6 +110,15 @@
       }
     ]
   },
+  "GET /api/users/:username": {
+    "description": "serves an object with the selected users properties",
+    "exampleResponse": { "user": {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    }
+  },
   "POST /api/articles/:article_id/comments": {
     "description": "Inserts a comment into the comment database linked to an article by the id number",
     "requestFormatExample": {
