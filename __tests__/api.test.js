@@ -375,7 +375,7 @@ describe('/api/users', () => {
         })
     })
 })
-describe('GET /api/articles (sorting queries)', () => {
+describe('GET /api/articles (queries)', () => {
     describe('sort_by', () => {
         it('serves an array of articles sorted by their ID number', () => {
             return request(app)
@@ -387,6 +387,16 @@ describe('GET /api/articles (sorting queries)', () => {
                 })
             })
         })
+        it('serves an error 404 not found if sort_by is not a valid column', () => {
+            return request(app)
+            .get('/api/articles?sort_by=height')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('column does not exist')
+            })
+        })
+    })
+    describe('order', () => {
         it('serves an array ordered in ascending order if queried', () => {
             return request(app)
             .get('/api/articles?order=asc')
@@ -403,13 +413,36 @@ describe('GET /api/articles (sorting queries)', () => {
                 expect(message).toBe('invalid request')
             })
         })
-        it('serves an error 404 not found if sort_by is not a valid column', () => {
+    })
+    describe('topics', () => {
+        it('serves an array of articles filtered by selected topic', () => {
             return request(app)
-            .get('/api/articles?sort_by=height')
-            .expect(404)
-            .then(({body: {message}}) => {
-                expect(message).toBe('column does not exist')
+            .get('/api/articles?topic=cats')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(1)
+                articles.forEach((article) => {
+                    expect(article).toEqual({
+                            author: expect.any(String),
+                            title: expect.any(String),
+                            article_id: expect.any(Number),
+                            topic: 'cats',
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            article_img_url: expect.any(String),
+                            comment_count: expect.any(Number)
+                        }
+                    )
+                })
             })
         })
-    })
+        it('serves an error of 404 not found if topic does not exist', () => {
+            return request(app)
+            .get('/api/articles?topic=not-an-existing-topic')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+    })   
 })
