@@ -3,15 +3,15 @@ const { fetchArticleById, fetchArticles, fetchCommentsOnArticle, addCommentToArt
 exports.getArticles = (request, response, next) => {
     const {sort_by} = request.query
     const {order} = request.query
-    return fetchArticles(sort_by, order)
+    const {topic} = request.query
+    return fetchArticles(sort_by, order, topic)
     .then((articles) => {
         articles.forEach((article) => {
-            article.comment_count = parseInt(article.comment_count) //<< change comment_count to number from string
+            article.comment_count = parseInt(article.comment_count)
         })
         response.status(200).send({articles})
     })
     .catch((err) => {
-        console.log(err)
         next(err)
     })
 }

@@ -1,20 +1,42 @@
 const db = require('../db/connection')
 const { checkUserExists } = require('../utils/utils')
 const format = require('pg-format')
+const { fetchTopics } = require('./topics.model')
 
-exports.fetchArticles = (sort_by = 'created_at', order = 'DESC') => {
+exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
 
     const orderGreenList = ['asc', 'ASC', 'desc', 'DESC' ]
+    const topicsGreenlist = []
+    let addTopicSqlString = ''
 
-    if(!orderGreenList.includes(order)){
-        return Promise.reject({status: 400, message: 'invalid request'})
-    }
+    return fetchTopics()
+    .then((topics) => {
+        topics.forEach(({slug}) => { topicsGreenlist.push(slug) })
+            if(topic !== undefined && !topicsGreenlist.includes(topic)){
+                return Promise.reject({status: 404, message: 'not found'})
+            }
+            else{
+                addTopicSqlString = format(' WHERE topic = %L', topic) 
+            }
+    })
+    .then(() => {
+        
+        if(!orderGreenList.includes(order)){
+            return Promise.reject({status: 400, message: 'invalid request'})
+        }
+        
+        let sqlString ='SELECT COUNT (comments.body) AS comment_count, articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id'
 
-    let sqlString = format('SELECT COUNT (comments.body) AS comment_count, articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id  GROUP BY articles.article_id ORDER BY %I', sort_by)
+        if(topic){
+            sqlString += addTopicSqlString
+        }
 
-    sqlString += ` ${order}`
-
-    return db.query(sqlString)
+        sqlString += format(' GROUP BY articles.article_id ORDER BY %I', sort_by)
+        
+        sqlString += ` ${order}`
+    
+        return db.query(sqlString)
+    })
     .then(({rows}) => {
         return rows
     })
