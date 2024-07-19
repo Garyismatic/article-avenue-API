@@ -25,7 +25,7 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
             return Promise.reject({status: 400, message: 'invalid request'})
         }
         
-        let sqlString ='SELECT COUNT (comments.body) AS comment_count, articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id'
+        let sqlString ='SELECT CAST(COUNT (comments.body) AS int) AS comment_count, articles.author, title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url FROM articles FULL OUTER JOIN comments ON comments.article_id = articles.article_id'
 
         if(topic){
             sqlString += addTopicSqlString
@@ -43,7 +43,7 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
 }
 
 exports.fetchArticleById = (articleId) => {
-    return db.query('SELECT COUNT (comments.article_id) AS comment_count, articles.body, articles.article_id, articles.author, articles.votes, articles.created_at, title, topic, article_img_url FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id', [articleId])
+    return db.query('SELECT CAST(COUNT (comments.article_id) AS int) AS comment_count, articles.body, articles.article_id, articles.author, articles.votes, articles.created_at, title, topic, article_img_url FROM articles LEFT JOIN comments ON comments.article_id = articles.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id;', [articleId])
     .then(({rows}) => {
         if(rows.length === 0){
             return Promise.reject({ status: 404, message: 'not found' })
@@ -91,4 +91,28 @@ exports.updateVotesOnArticle = (voteCount, articleId) => {
         return rows[0]
     })   
     }) 
+}
+
+exports.addNewArticle = (article) => {
+   
+    const { author, title, body, topic, article_img_url } = article
+    const articleGreenlist = [ author, title, body, topic, article_img_url ]
+    let articleImage = article_img_url
+
+    for(const key in article){
+        if(!articleGreenlist.includes(article[key])){
+            return Promise.reject({status: 400, message: 'invalid request'})
+        }
+    }
+
+    if(articleImage === undefined){
+        articleImage = 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700'
+    }
+    
+    return db.query('INSERT INTO articles (title, topic, author, body, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *', [title, topic, author, body, articleImage])
+    .then(({rows}) => {
+        const newArticleId = rows[0].article_id
+        return this.fetchArticleById(newArticleId)
+    })
+
 }

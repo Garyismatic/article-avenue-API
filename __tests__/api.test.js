@@ -75,6 +75,98 @@ describe('/api/articles', () => {
             })
         })
     })
+    describe('POST', () => {
+        it('adds a new article to the articles database returning the newly created article back to the client', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                author: 'lurker',
+                title: 'My new article',
+                body: 'Written down thoughts all about my new article',
+                topic: 'cats',
+            })
+            .expect(201)
+            .then(({body: {article}}) => {
+                expect(article).toEqual({
+                    author: 'lurker',
+                    title: 'My new article',
+                    body: 'Written down thoughts all about my new article',
+                    topic: 'cats',
+                    article_img_url: 'https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700',
+                    article_id: expect.any(Number),
+                    votes: 0,
+                    created_at: expect.any(String),
+                    comment_count: 0
+                })
+                return article.article_id
+            })
+            .then((article_id) => {
+                return request(app)
+                .get(`/api/articles/${article_id}`)
+                .expect(200)
+            })
+        })
+        it('returns 400 bad request if the request body does not meet the required format missing required information', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                author: 'lurker',
+                body: 'Written down thoughts all about my new article',
+                topic: 'cats',
+            })
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('returns 400 bad request if the request body does not meet the required format with too many values', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'an awesome article about cats',
+                author: 'lurker',
+                body: 'Written down thoughts all about my new article',
+                topic: 'cats',
+                article_img_url: 'my link to my cool image',
+                whatsThis: 'bad request',
+                goodMeasure: 'another bad request'
+            })
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+        it('returns 400 bad request if given an incorrect topic / foreign key', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'an awesome article about donkeys',
+                author: 'lurker',
+                body: 'Written down thoughts all about my new article',
+                topic: 'donkeys',
+                article_img_url: 'my link to my cool image',
+            })
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Request contains invalid reference')
+            })
+        })
+        it('returns 400 bad request if given an incorrect author / foreign key', () => {
+            return request(app)
+            .post('/api/articles')
+            .send({
+                title: 'an awesome article about donkeys',
+                author: 'unauthed-user',
+                body: 'Written down thoughts all about my new article',
+                topic: 'cats',
+                article_img_url: 'my link to my cool image',
+            })
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('Request contains invalid reference')
+            })
+        })
+    })
 })
 describe('/api/articles/:article_id', () => {
     describe('GET', () => {
@@ -94,7 +186,7 @@ describe('/api/articles/:article_id', () => {
                     article_img_url:
                       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
                       votes: 0,
-                      comment_count: '2'
+                      comment_count: 2
                   }
                 })
             })

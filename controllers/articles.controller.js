@@ -1,4 +1,4 @@
-const { fetchArticleById, fetchArticles, fetchCommentsOnArticle, addCommentToArticle, updateVotesOnArticle } = require("../models/articles.model")
+const { fetchArticleById, fetchArticles, fetchCommentsOnArticle, addCommentToArticle, updateVotesOnArticle, addNewArticle } = require("../models/articles.model")
 
 exports.getArticles = (request, response, next) => {
     const {sort_by} = request.query
@@ -6,9 +6,6 @@ exports.getArticles = (request, response, next) => {
     const {topic} = request.query
     return fetchArticles(sort_by, order, topic)
     .then((articles) => {
-        articles.forEach((article) => {
-            article.comment_count = parseInt(article.comment_count)
-        })
         response.status(200).send({articles})
     })
     .catch((err) => {
@@ -56,6 +53,17 @@ exports.patchArticleVotes = (request, response, next) => {
     .then((updatedArticle) => {
         response.status(200).send({updatedArticle})
     }).catch((err) => {
+        next(err)
+    })
+}
+
+exports.postArticle = (request, response, next) => {
+    const newArticle = request.body
+    return addNewArticle(newArticle)
+    .then((article) => {
+        response.status(201).send({article})
+    })
+    .catch((err) => {
         next(err)
     })
 }
