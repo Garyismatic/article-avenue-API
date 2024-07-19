@@ -3,11 +3,12 @@ const { checkUserExists } = require('../utils/utils')
 const format = require('pg-format')
 const { fetchTopics } = require('./topics.model')
 
-exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
+exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic, limit = 10, p = 1) => {
 
     const orderGreenList = ['asc', 'ASC', 'desc', 'DESC' ]
     const topicsGreenlist = []
     let addTopicSqlString = ''
+    const promiseArray = []
 
     return fetchTopics()
     .then((topics) => {
@@ -34,11 +35,24 @@ exports.fetchArticles = (sort_by = 'created_at', order = 'DESC', topic) => {
         sqlString += format(' GROUP BY articles.article_id ORDER BY %I', sort_by)
         
         sqlString += ` ${order}`
-    
-        return db.query(sqlString)
+
+        return Promise.all([db.query(sqlString), sqlString])
     })
-    .then(({rows}) => {
-        return rows
+    .then(([{rows},sqlString]) => {
+
+        const total_count = rows.length
+
+        sqlString += ' LIMIT $1 OFFSET $2'
+        
+        p = (p - 1) * limit
+
+        return Promise.all([db.query(sqlString, [limit, p]),total_count])
+    })
+    .then(([{rows},total_count]) => {
+        if(rows.length === 0){
+            return Promise.reject({status: 404, message: 'not found'})
+        }
+        return [rows, total_count]
     })
 }
 

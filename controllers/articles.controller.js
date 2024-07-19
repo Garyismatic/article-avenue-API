@@ -1,12 +1,10 @@
 const { fetchArticleById, fetchArticles, fetchCommentsOnArticle, addCommentToArticle, updateVotesOnArticle, addNewArticle } = require("../models/articles.model")
 
 exports.getArticles = (request, response, next) => {
-    const {sort_by} = request.query
-    const {order} = request.query
-    const {topic} = request.query
-    return fetchArticles(sort_by, order, topic)
-    .then((articles) => {
-        response.status(200).send({articles})
+    const {sort_by, order, topic, limit, p} = request.query
+    return fetchArticles(sort_by, order, topic, limit, p)
+    .then(([articles,total_count]) => {
+        response.status(200).send({articles, total_count})
     })
     .catch((err) => {
         next(err)

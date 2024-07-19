@@ -51,7 +51,7 @@ describe('/api/articles', () => {
             .get('/api/articles')
             .expect(200)
             .then(({body: {articles}}) => {
-                expect(articles.length).toBe(13)
+                expect(articles.length).toBe(10)
                 articles.forEach((article) => {
                     expect(article).toEqual({
                         author: expect.any(String),
@@ -598,7 +598,69 @@ describe('GET /api/articles (queries)', () => {
                 expect(message).toBe('not found')
             })
         })
-    })   
+    })
+    describe('limit', () => {
+        it('serves an array of articles limited to the amount set', () => {
+            return request(app)
+            .get('/api/articles?limit=5')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles.length).toBe(5)
+            })
+        })
+        it('serves a 400 bad request if limit is not a number', () => {
+            return request(app)
+            .get('/api/articles?limit=not-a-number')
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+    })
+    describe('p', () => {
+        it('serves an array of articles starting at article 11 with default limit of 10 articles per page sorted in ascending order by article id with page set to page 2 ', () => {
+            return request(app)
+            .get('/api/articles?sort_by=article_id&order=asc&p=2')
+            .expect(200)
+            .then(({body: {articles}}) => {
+                expect(articles[0].article_id).toBe(11)
+            })
+        })
+        it('serves an 404 when no articles are on the selected page', () => {
+            return request(app)
+            .get('/api/articles?p=3')
+            .expect(404)
+            .then(({body: {message}}) => {
+                expect(message).toBe('not found')
+            })
+        })
+        it('serves a 400 bad request if page is not a number', () => {
+            return request(app)
+            .get('/api/articles?p=not-a-number')
+            .expect(400)
+            .then(({body: {message}}) => {
+                expect(message).toBe('invalid request')
+            })
+        })
+    })
+    describe('total_count', () => {
+        it('serves a total number of articles found discounting the limit filter', () => {
+            return request(app)
+            .get('/api/articles?limit=5')
+            .expect(200)
+            .then(({body: {total_count}}) => {
+                expect(total_count).toBe(13)
+            })
+        })
+        it('serves a total number of articles found taking into consideration filters set discounting the limit filter', () => {
+            return request(app)
+            .get('/api/articles?topic=cats')
+            .expect(200)
+            .then(({body: {total_count}}) => {
+                expect(total_count).toBe(1)
+            })
+        })
+    })
 })
 describe('/api/users/:username', () => {
     describe('GET', () => {
