@@ -27,6 +27,30 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "creates a new article sending confirmation back to the client",
+    "requestFormatExample": {
+      "author": "insert your username - required to be existing username",
+      "body": "This is the article that will be posted",
+      "title": "Title of your new article",
+      "topic": "what your article is about - required to be existing topic",
+      "article_img_url": "optional url for your articles image will default if not set"
+  },
+    "exampleResponse": {
+      "article": 
+      {
+        "author": "username",
+        "title": "title of your article",
+        "body": "article posted",
+        "topic": "chosen topic",
+        "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+        "article_id": 14,
+        "votes": 0,
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "comment_count": 0
+    }  
+    }
+  },
   "GET /api/articles?sort_by=title": {
     "description": "serves an array of all articles sorted by title descending as default",
     "exampleResponse": {
