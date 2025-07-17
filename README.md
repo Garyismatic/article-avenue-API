@@ -2,7 +2,7 @@
 
 Hi and welcome to my project Article Avenue!
 
-You can find this repository hosted at `https://nc-news-zah4.onrender.com/api`
+You can find this repository hosted at `https://article-avenue-api.onrender.com/api`
 
 PROJECT SUMMARY:
 
