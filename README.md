@@ -25,7 +25,7 @@ SETTING UP REPO ON YOUR OWN LOCAL MACHINE:
 
 You can clone this repository through your terminal from the directory of where you would like to store it on your local machine.
 
-In the terminal type `git clone https://github.com/Garyismatic/NC-News.git`.
+In the terminal type `git clone https://github.com/Garyismatic/article-avenue-API.git`.
 
 Go ahead and open the repository in your preferred code editor.
 
